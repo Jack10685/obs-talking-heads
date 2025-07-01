@@ -6,12 +6,12 @@ public class OBSCommunication {
 
     private static boolean ready = false;
 
-    public static void createOBSRemoteController(String password) {
+    public static void createOBSRemoteController(String host, String port, String password) {
         controller = OBSRemoteController.builder()
-            .host("localhost")                  // Default host
-            .port(4455)                         // Default port
-            .password(password)   // Provide your password here
-            .connectionTimeout(0)               // Seconds the client will wait for OBS to respond
+            .host(host)                         // Default host
+            .port(Integer.getInteger(port))     // Default port
+            .password(password)                 // Provide your password here
+            .connectionTimeout(0)       // Seconds the client will wait for OBS to respond
             .lifecycle().onReady(new SetReady())
             .and()
             .build();
@@ -43,6 +43,7 @@ public class OBSCommunication {
         @Override
         public void run() {
             setReady();
+            LoginController.loginSuccessful();
             System.out.println("Ready");
         }
     }

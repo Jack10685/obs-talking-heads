@@ -1,6 +1,6 @@
 public class OBSObjectTest {
     public static void main(String[] args) throws InterruptedException {
-        OBSCommunication.createOBSRemoteController("<OBS Password Here>");
+        OBSCommunication.createOBSRemoteController("<host>", "<port>", "<OBS password here>");
         OBSCommunication.setScene("test");
         Thread.sleep(1000);
         OBSCommunication.getController().getSceneItemId("test", "Image", 0,
