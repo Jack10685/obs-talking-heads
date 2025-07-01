@@ -13,13 +13,9 @@ public class Login extends Application {
      */
    @Override
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
-
         Main.stage = stage;
-
-        Scene login = new Scene(root);
         stage.setTitle("Talking Heads");
-        stage.setScene(login);
+        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("login.fxml"))));
         stage.show();
     }
 

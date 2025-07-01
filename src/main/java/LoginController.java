@@ -1,7 +1,12 @@
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+
+import java.io.IOException;
 
 public class LoginController {
     @FXML
@@ -20,14 +25,25 @@ public class LoginController {
      */
     @FXML
     private void doLogin() {
-        System.out.println("test");
+        OBSCommunication.createOBSRemoteController(host.getText(), port.getText(), password.getText());
     }
 
     /**
      * called by OBSCommunication once login is successful, replaces Login screen with main screen
      */
     public static void loginSuccessful() {
-
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Main.stage.hide();
+                try {
+                    Main.stage.setScene(new Scene(FXMLLoader.load(LoginController.class.getResource("controlpanel.fxml"))));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Main.stage.show();
+            }
+        });
     }
 
     /**
