@@ -3,16 +3,69 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane prefHeight="498.0" prefWidth="724.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="PanelController">
    <children>
-      <TabPane prefHeight="200.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="498.0" prefWidth="724.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab onSelectionChanged="#addTalkingHead" text="Add">
+          <Tab text="Talking Heads">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="171.0" prefWidth="720.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="446.0" prefWidth="724.0">
+                     <children>
+                        <BorderPane layoutY="14.0" prefHeight="469.0" prefWidth="724.0">
+                           <right>
+                              <ScrollPane fx:id="OBSImageBar" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <content>
+                                    <TilePane orientation="VERTICAL" />
+                                 </content>
+                              </ScrollPane>
+                           </right>
+                           <left>
+                              <ScrollPane fx:id="discordUserBar" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <content>
+                                    <TilePane />
+                                 </content>
+                              </ScrollPane>
+                           </left>
+                           <bottom>
+                              <ScrollPane fx:id="existingBar" prefHeight="132.0" prefWidth="724.0" BorderPane.alignment="CENTER">
+                                 <content>
+                                    <TilePane />
+                                 </content>
+                              </ScrollPane>
+                           </bottom>
+                           <center>
+                              <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Button layoutX="143.0" layoutY="169.0" mnemonicParsing="false" text="Link" />
+                                    <Spinner amountToStepBy="1" editable="true" layoutX="88.0" layoutY="135.0" />
+                                    <Label layoutX="95.0" layoutY="111.0" text="Pixel Offset when talking:" />
+                                 </children>
+                              </Pane>
+                           </center>
+                        </BorderPane>
+                     </children></AnchorPane>
             </content>
           </Tab>
+            <Tab text="Settings">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <PasswordField fx:id="tokenField" layoutX="199.0" layoutY="33.0" />
+                  <Label layoutX="14.0" layoutY="37.0" text="Discord Token (DO NOT SHARE):" />
+                  <Hyperlink layoutX="362.0" layoutY="34.0" text="Click here for instructions on how to get one" />
+                  <Label layoutX="14.0" layoutY="87.0" text="Bot join command:" />
+                  <TextField fx:id="joinCommandField" layoutX="125.0" layoutY="83.0" text="!thjoin" />
+                  <Label layoutX="294.0" layoutY="87.0" text="Bot leave command:" />
+                  <TextField fx:id="leaveCommandFIeld" layoutX="417.0" layoutY="83.0" text="!thleave" />
+                  <Button fx:id="saveButton" layoutX="343.0" layoutY="397.0" mnemonicParsing="false" text="Save" />
+                  <Button fx:id="resetButton" layoutX="311.0" layoutY="430.0" mnemonicParsing="false" text="Reset to Defaults" />
+                  <Button fx:id="deleteSavedButton" layoutX="282.0" layoutY="210.0" mnemonicParsing="false" text="Delete saved Talking Heads " />
+                  <Label layoutX="14.0" layoutY="140.0" text="OBS Scene Name:" />
+                  <TextField layoutX="114.0" layoutY="136.0" />
+                  <Hyperlink layoutX="274.0" layoutY="137.0" text="What is this?" />
+                  <Button layoutX="298.0" layoutY="243.0" mnemonicParsing="false" text="Refresh Talking Heads" />
+                  <Spinner editable="true" layoutX="508.0" layoutY="136.0" amountToStepBy="1" initialValue="80" />
+                  <Label layoutX="370.0" layoutY="140.0" text="Default talking shift (px):" />
+                </AnchorPane>
+            </Tab>
         </tabs>
       </TabPane>
    </children>
