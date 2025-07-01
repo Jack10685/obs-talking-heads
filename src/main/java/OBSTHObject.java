@@ -1,4 +1,5 @@
 import io.obswebsocket.community.client.model.SceneItem;
+import net.dv8tion.jda.api.entities.User;
 
 /**
  * This holds the information that connects a specific user to a specific talking head
@@ -10,16 +11,28 @@ public class OBSTHObject {
     private float pos;
     private int talkingState;
     private Number sceneItemId;
+    private User user;
+
 
     /**
-     * Creates an OBS Talking Head Object
-     * @param sceneItemId The item id of the talking head (this will likely change to the source name)
+     * Links member to talking head in OBS
+     * @param username the username of the person in discord
+     * @param itemName The name of the item in the OBS scene
      * @param position The default starting position (not talking) of a talking head (this will likely go away)
      */
-    public OBSTHObject(Number sceneItemId, float position) {
+    public OBSTHObject(String username, String itemName, float position) {
         talkingState = STATE_NOT_TALKING;
-        this.sceneItemId = sceneItemId;
+        OBSCommunication.getController().getSceneItemId(OBSCommunication.getScene(), itemName, 0, res -> sceneItemId = res.getSceneItemId());
         pos = position;
+        user = DiscordCommunication.findUserByName(username);
+    }
+
+    /**
+     * gets the discord user associated with this object
+     * @return the discord user
+     */
+    public User getUser() {
+        return user;
     }
 
     /**
@@ -46,15 +59,17 @@ public class OBSTHObject {
      * (ie, if state is STATE_TALKING and setTalkingState(STATE_TALKING) is called, this doesn't do anything)
      */
     private void updateState() {
-        if (talkingState == STATE_NOT_TALKING) {
-            // obs request to lower talking head
-            OBSCommunication.getController().setSceneItemTransform(OBSCommunication.getScene(), sceneItemId, SceneItem.Transform.builder().positionY(pos).build(), 0);
-        } else if (talkingState == STATE_TALKING) {
-            // obs request to raise talking head
-            System.out.println(OBSCommunication.getScene());
-            System.out.println(sceneItemId);
+        if (sceneItemId != null) {
+            if (talkingState == STATE_NOT_TALKING) {
+                // obs request to lower talking head
+                OBSCommunication.getController().setSceneItemTransform(OBSCommunication.getScene(), sceneItemId, SceneItem.Transform.builder().positionY(pos).build(), 0);
+            } else if (talkingState == STATE_TALKING) {
+                // obs request to raise talking head
+                System.out.println(OBSCommunication.getScene());
+                System.out.println(sceneItemId);
 
-            OBSCommunication.getController().setSceneItemTransform(OBSCommunication.getScene(), sceneItemId, SceneItem.Transform.builder().positionY((pos-80)).build(), 0);
+                OBSCommunication.getController().setSceneItemTransform(OBSCommunication.getScene(), sceneItemId, SceneItem.Transform.builder().positionY((pos - 80)).build(), 0);
+            }
         }
     }
 }

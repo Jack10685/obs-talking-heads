@@ -7,7 +7,7 @@ public class OBSObjectTest {
                 res -> {
                     System.out.println(res.toString());
                     System.out.println(res.getSceneItemId());
-                    OBSTHObject test = new OBSTHObject(res.getSceneItemId(), (float)873);
+                    OBSTHObject test = new OBSTHObject("test", "Image", (float)873);
                     try {
                         while (true) {
                             System.out.println("loop");

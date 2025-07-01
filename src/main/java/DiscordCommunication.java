@@ -1,30 +1,57 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioReceiveHandler;
+import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class DiscordCommunication {
-    private static String token;
     private static JDA discord;
     private static boolean ready = false;
+    private static Guild server;
+
 
     /**
      * sets the token for the discord bot
      * @param token discord bot token, you can get a token here: https://discord.com/developers/applications
      */
     public static void setBotToken(String token) {
-        DiscordCommunication.token = token;
         discord = JDABuilder.createDefault(token)
-                .addEventListeners(new DiscordEventListener())
+                .addEventListeners(new ReadyListener())
                 .build();
     }
 
     /**
-     * Listens for Discord Events we want to watch for (currently just ready state listener)
+     * find member by name
+     * @param name name of the member in server
+     * @return 1st member with that name, or null if non existant
      */
-    public static class DiscordEventListener implements EventListener {
+    public static User findUserByName(String name) {
+        if (ready) {
+            List<Member> ret = server.getMembersByEffectiveName(name, true);
+            if (ret.isEmpty()) {
+                return null;
+            }
+            return ret.get(0).getUser();
+        }
+        return null;
+    }
+
+    /**
+     * Listens for Ready state
+     */
+    public static class ReadyListener implements EventListener {
 
         @Override
         public void onEvent(@NotNull GenericEvent event) {
@@ -32,5 +59,55 @@ public class DiscordCommunication {
                 ready = true;
             }
         }
+
+
     }
+
+    /**
+     * listens for general Discord Events
+     */
+    public static class DiscordEventListener extends ListenerAdapter implements AudioReceiveHandler {
+        AudioManager audio;
+
+        @Override
+        public void onMessageReceived(MessageReceivedEvent event) {
+            Message m = event.getMessage();
+            if (m.getContentRaw().equals("!thjoin")) { // this will likely be editable later
+                // save guild
+                server = m.getGuild();
+                // join author's vc
+                audio = m.getGuild().getAudioManager();
+                if (m.getMember().getVoiceState() != null && m.getMember().getVoiceState().getChannel() != null) {
+                    audio.setReceivingHandler(this);
+                    audio.openAudioConnection(m.getMember().getVoiceState().getChannel());
+                } else {
+                    m.getChannel().sendMessage(m.getMember().getEffectiveName()+" is not in a voice channel.");
+                }
+            } else if (m.getContentRaw().equals("!thleave")) { // this will likely be editable later
+                if (audio != null) {
+                    audio.closeAudioConnection();
+                }
+            } else if (m.getContentRaw().equals("!register")) {
+                // save guild
+                server = m.getGuild();
+            }
+        }
+
+        /**
+         * Sets talking heads to STATE_TALKING or STATE_NOT_TALKING based on received combined audio
+         * @param audio audio information
+         */
+        @Override
+        public void handleCombinedAudio(CombinedAudio audio) {
+            for (OBSTHObject link : Main.links) {
+                if (audio.getUsers().contains(link.getUser())) {
+                    link.setTalkingState(OBSTHObject.STATE_TALKING);
+                } else {
+                    link.setTalkingState(OBSTHObject.STATE_NOT_TALKING);
+                }
+            }
+        }
+    }
+
+
 }
