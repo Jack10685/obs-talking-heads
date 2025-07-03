@@ -1,6 +1,6 @@
 public class OBSObjectTest {
     public static void main(String[] args) throws InterruptedException {
-        OBSCommunication.createOBSRemoteController("<host>", "<port>", "<OBS password here>");
+        OBSCommunication.createOBSRemoteController("localhost", "4455", "DHts1kjsVdweSCgv");
         OBSCommunication.setScene("test");
         Thread.sleep(1000);
         OBSCommunication.getController().getSceneItemId("test", "Image", 0,
@@ -8,6 +8,7 @@ public class OBSObjectTest {
                     System.out.println(res.toString());
                     System.out.println(res.getSceneItemId());
                     OBSTHObject test = new OBSTHObject("test", "Image", (float)873);
+                    test.sceneItemId = 1;
                     try {
                         while (true) {
                             System.out.println("loop");

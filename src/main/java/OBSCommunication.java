@@ -1,6 +1,8 @@
 import io.obswebsocket.community.client.OBSRemoteController;
+import io.obswebsocket.community.client.model.SceneItem;
 
 import java.io.IOException;
+import java.util.List;
 
 public class OBSCommunication {
     private static OBSRemoteController controller;
@@ -29,6 +31,13 @@ public class OBSCommunication {
             .and()
             .build();
         controller.connect();
+    }
+
+    public static List<SceneItem> getItemsInScene() {
+        if (scene == null) {
+            scene = "test";
+        }
+        return controller.getSceneItemList(scene, 3).getSceneItems();
     }
 
     public static boolean isReady() {

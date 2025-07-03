@@ -14,13 +14,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiscordCommunication {
     private static JDA discord;
     private static boolean ready = false;
     private static Guild server;
-
+    private static AudioManager audio;
 
     /**
      * sets the token for the discord bot
@@ -64,10 +65,24 @@ public class DiscordCommunication {
     }
 
     /**
+     * gets all the users in the current voice channel, returns an empty list if not connected
+     * @return List of users
+     */
+    public static List<User> getTalkingUsers() {
+        if (audio == null) {
+            return new ArrayList<>();
+        }
+        ArrayList<User> ret = new ArrayList<>();
+        for (Member member : audio.getConnectedChannel().getMembers()) {
+            ret.add(member.getUser());
+        }
+        return ret;
+    }
+
+    /**
      * listens for general Discord Events
      */
     public static class DiscordEventListener extends ListenerAdapter implements AudioReceiveHandler {
-        AudioManager audio;
 
         @Override
         public void onMessageReceived(MessageReceivedEvent event) {

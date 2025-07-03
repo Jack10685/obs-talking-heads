@@ -10,7 +10,7 @@ public class OBSTHObject {
 
     private float pos;
     private int talkingState;
-    private Number sceneItemId;
+    public Number sceneItemId;
     private User user;
 
 
