@@ -4,6 +4,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.TilePane;
 import net.dv8tion.jda.api.entities.User;
@@ -21,6 +23,14 @@ public class PanelController {
 
     @FXML
     private Label elementLabel;
+    @FXML
+    private PasswordField tokenField;
+    @FXML
+    private TextField joinCommandField;
+    @FXML
+    private TextField leaveCommandField;
+    @FXML
+    private TextField sceneField;
 
     private Integer itemID;
     @FXML
@@ -28,6 +38,53 @@ public class PanelController {
 
     }
 
+    @FXML
+    private void createTalkingHead() {
+        //TODO: implement adding new OBSTHObject into Main.links
+    }
+
+    /**
+     * deleted all talking heads, deletes save file of talking heads (unimplemented)
+     */
+    @FXML
+    private void deleteAllTalkingHeads() {
+        //TODO: first implement talking head GUI functionality, then implement this delete all functionality
+    }
+
+    /**
+     * in the event that scene ids change (reordering, deleting and readding, OBS being weird), this will realign the user to the correct talking head
+     */
+    @FXML
+    private void refreshTalkingHeads() {
+        //TODO: refresh functionality
+    }
+
+    /**
+     * activates when pressing "save" button on settings panel, saves settings
+     */
+    @FXML
+    private void saveSettings() {
+        DiscordCommunication.setBotToken(tokenField.getText());
+        OBSCommunication.setScene(sceneField.getText());
+        DiscordCommunication.setJoinCommand(joinCommandField.getText());
+        DiscordCommunication.setLeaveCommand(leaveCommandField.getText());
+    }
+
+    /**
+     * resets settings, does not remove discord token or change scene (no default values for these)
+     */
+    @FXML
+    private void resetDefault() {
+        DiscordCommunication.setJoinCommand("!thjoin");
+        DiscordCommunication.setLeaveCommand("!thleave");
+        joinCommandField.setText("!thjoin");
+        leaveCommandField.setText("!thleave");
+        //TODO: figure out spinner, implement resetting default
+    }
+
+    /**
+     * repulls all of the currently speaking discord users and items in the OBS scene
+     */
     @FXML
     private void refresh() {
         // remove all elements in left and right panes

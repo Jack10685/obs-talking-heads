@@ -36,7 +36,7 @@
                            <center>
                               <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <Button layoutX="143.0" layoutY="208.0" mnemonicParsing="false" text="Link" />
+                                    <Button layoutX="143.0" layoutY="208.0" mnemonicParsing="false" onAction="#createTalkingHead" text="Link" />
                                     <Spinner amountToStepBy="1" editable="true" layoutX="87.0" layoutY="172.0" />
                                     <Label layoutX="94.0" layoutY="146.0" text="Pixel Offset when talking:" />
                                     <Button layoutX="134.0" layoutY="241.0" mnemonicParsing="false" onAction="#refresh" text="Refresh" />
@@ -59,13 +59,13 @@
                   <TextField fx:id="joinCommandField" layoutX="125.0" layoutY="83.0" text="!thjoin" />
                   <Label layoutX="294.0" layoutY="87.0" text="Bot leave command:" />
                   <TextField fx:id="leaveCommandFIeld" layoutX="417.0" layoutY="83.0" text="!thleave" />
-                  <Button fx:id="saveButton" layoutX="343.0" layoutY="397.0" mnemonicParsing="false" text="Save" />
-                  <Button fx:id="resetButton" layoutX="311.0" layoutY="430.0" mnemonicParsing="false" text="Reset to Defaults" />
+                  <Button layoutX="343.0" layoutY="397.0" mnemonicParsing="false" onAction="#saveSettings" text="Save" />
+                  <Button fx:id="resetButton" layoutX="311.0" layoutY="430.0" mnemonicParsing="false" onAction="#resetDefault" text="Reset to Defaults" />
                   <Button fx:id="deleteSavedButton" layoutX="282.0" layoutY="210.0" mnemonicParsing="false" text="Delete saved Talking Heads " />
                   <Label layoutX="14.0" layoutY="140.0" text="OBS Scene Name:" />
-                  <TextField layoutX="114.0" layoutY="136.0" />
+                  <TextField fx:id="sceneField" layoutX="114.0" layoutY="136.0" />
                   <Hyperlink layoutX="274.0" layoutY="137.0" text="What is this?" />
-                  <Button layoutX="298.0" layoutY="243.0" mnemonicParsing="false" text="Refresh Talking Heads" />
+                  <Button layoutX="298.0" layoutY="243.0" mnemonicParsing="false" onAction="#refreshTalkingHeads" text="Refresh Talking Heads" />
                   <Spinner amountToStepBy="1" editable="true" initialValue="80" layoutX="508.0" layoutY="136.0" />
                   <Label layoutX="370.0" layoutY="140.0" text="Default talking shift (px):" />
                 </AnchorPane>

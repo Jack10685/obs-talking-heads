@@ -22,6 +22,8 @@ public class DiscordCommunication {
     private static boolean ready = false;
     private static Guild server;
     private static AudioManager audio;
+    private static String leaveCommand = "!thjoin";
+    private static String joinCommand = "!thleave";
 
     /**
      * sets the token for the discord bot
@@ -31,6 +33,22 @@ public class DiscordCommunication {
         discord = JDABuilder.createDefault(token)
                 .addEventListeners(new ReadyListener())
                 .build();
+    }
+
+    /**
+     * Sets the command to make the discord bot join a voice channel
+     * @param joinCommand command to join voice channel
+     */
+    public static void setJoinCommand(String joinCommand) {
+        DiscordCommunication.joinCommand = joinCommand;
+    }
+
+    /**
+     * Sets the command to make the discord bot leave a voice channel
+     * @param leaveCommand command to leave voice channel
+     */
+    public static void setLeaveCommand(String leaveCommand) {
+        DiscordCommunication.leaveCommand = leaveCommand;
     }
 
     /**
@@ -87,7 +105,7 @@ public class DiscordCommunication {
         @Override
         public void onMessageReceived(MessageReceivedEvent event) {
             Message m = event.getMessage();
-            if (m.getContentRaw().equals("!thjoin")) { // this will likely be editable later
+            if (m.getContentRaw().equals(joinCommand)) {
                 // save guild
                 server = m.getGuild();
                 // join author's vc
@@ -98,14 +116,14 @@ public class DiscordCommunication {
                 } else {
                     m.getChannel().sendMessage(m.getMember().getEffectiveName()+" is not in a voice channel.");
                 }
-            } else if (m.getContentRaw().equals("!thleave")) { // this will likely be editable later
+            } else if (m.getContentRaw().equals(leaveCommand)) {
                 if (audio != null) {
                     audio.closeAudioConnection();
                 }
-            } else if (m.getContentRaw().equals("!register")) {
+            } /*else if (m.getContentRaw().equals("!register")) { // probably not using
                 // save guild
                 server = m.getGuild();
-            }
+            }*/
         }
 
         /**
