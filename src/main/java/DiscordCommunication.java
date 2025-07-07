@@ -24,15 +24,36 @@ public class DiscordCommunication {
     private static AudioManager audio;
     private static String leaveCommand = "!thjoin";
     private static String joinCommand = "!thleave";
+    private static String token;
 
     /**
      * sets the token for the discord bot
      * @param token discord bot token, you can get a token here: https://discord.com/developers/applications
      */
     public static void setBotToken(String token) {
+        if (discord != null) {
+            if (audio != null && audio.getConnectedChannel() != null) {
+                audio.closeAudioConnection();
+            }
+            discord.cancelRequests();
+            discord.shutdownNow();
+        }
+        DiscordCommunication.token = token;
         discord = JDABuilder.createDefault(token)
                 .addEventListeners(new ReadyListener())
                 .build();
+    }
+
+    /**
+     * returns whether or not the passed in token argument matches the current token
+     * @param token token to check for matching
+     * @return whether the token matches or not
+     */
+    public static boolean checkToken(String token) {
+        if (DiscordCommunication.token.equals(token)) {
+            return true;
+        }
+        return false;
     }
 
     /**

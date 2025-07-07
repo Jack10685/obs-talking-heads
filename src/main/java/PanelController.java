@@ -38,6 +38,27 @@ public class PanelController {
 
     }
 
+
+
+    /**
+     * called by LocalStorage.loadSettings() if a settings.ini file exists
+     * @param settings value holding class for transferring everything in one variable
+     */
+    public void setSettings(LocalStorage.SettingsStore settings) {
+        if (settings.token != null)
+            tokenField.setText(settings.token);
+        if (settings.joinCommand != null)
+            joinCommandField.setText(settings.joinCommand);
+        if (settings.leaveCommand != null)
+            leaveCommandField.setText(settings.leaveCommand);
+        if (settings.scene != null)
+            sceneField.setText(settings.scene);
+        //TODO: add default shift setter (once that's linked and figured out)
+    }
+
+    /**
+     * creates the talking head from the selected discord user and OBS scene item
+     */
     @FXML
     private void createTalkingHead() {
         //TODO: implement adding new OBSTHObject into Main.links
@@ -64,10 +85,26 @@ public class PanelController {
      */
     @FXML
     private void saveSettings() {
-        DiscordCommunication.setBotToken(tokenField.getText());
-        OBSCommunication.setScene(sceneField.getText());
-        DiscordCommunication.setJoinCommand(joinCommandField.getText());
-        DiscordCommunication.setLeaveCommand(leaveCommandField.getText());
+        LocalStorage.SettingsStore settings = new LocalStorage.SettingsStore();
+        if (!tokenField.getText().isBlank()) {
+            if (!DiscordCommunication.checkToken(tokenField.getText())) {
+                DiscordCommunication.setBotToken(tokenField.getText());
+            }
+            settings.token = tokenField.getText();
+        }
+        if (!sceneField.getText().isBlank()) {
+            OBSCommunication.setScene(sceneField.getText());
+            settings.scene = sceneField.getText();
+        }
+        if (!joinCommandField.getText().isBlank()) {
+            DiscordCommunication.setJoinCommand(joinCommandField.getText());
+            settings.joinCommand = joinCommandField.getText();
+        }
+        if (!leaveCommandField.getText().isBlank()) {
+            DiscordCommunication.setLeaveCommand(leaveCommandField.getText());
+            settings.leaveCommand = leaveCommandField.getText();
+        }
+        LocalStorage.saveSettings(settings);
     }
 
     /**
