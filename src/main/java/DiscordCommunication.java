@@ -19,9 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiscordCommunication {
+    /**
+     * the JDA object for communicating with discord API, everything "starts" here for discord communication
+     */
     private static JDA discord;
+    /**
+     * true once discord api is ready to receive api calls
+     */
     private static boolean ready = false;
     private static Guild server;
+    /**
+     * shortcut for AudioManager pulled when a user types the join command (MessageReceivedEvent.getGuild().getAudioManager())
+     */
     private static AudioManager audio;
     private static String leaveCommand = "!thjoin";
     private static String joinCommand = "!thleave";
@@ -78,17 +87,13 @@ public class DiscordCommunication {
     }
 
     /**
-     * find member by name
-     * @param name name of the member in server
-     * @return 1st member with that name, or null if non existant
+     * find user by ID
+     * @param id ID of the user
+     * @return user associated with ID
      */
-    public static User findUserByName(String name) {
+    public static User findUserById(String id) {
         if (ready) {
-            List<Member> ret = server.getMembersByEffectiveName(name, true);
-            if (ret.isEmpty()) {
-                return null;
-            }
-            return ret.get(0).getUser();
+            return discord.getUserById(id);
         }
         return null;
     }

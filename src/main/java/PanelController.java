@@ -33,18 +33,18 @@ public class PanelController {
     @FXML
     private Spinner<Integer> defaultOffsetSpinner;
 
+    private String selectedId;
+
+    /**
+     * called once FXML elements loaded, used to load settings, initialize spinners, etc
+     */
     @FXML
     public void initialize() {
         Main.controller = this;
         offsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, 80, 1));
         defaultOffsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, 80, 1));
         LocalStorage.loadSettings();
-    }
-    
-    private Integer itemID;
-    @FXML
-    private void addTalkingHead() {
-
+        //TODO: load talkingheads saved info into bottom panel
     }
 
     /**
@@ -52,14 +52,22 @@ public class PanelController {
      * @param settings value holding class for transferring everything in one variable
      */
     public void setSettings(LocalStorage.SettingsStore settings) {
-        if (settings.token != null)
+        if (settings.token != null) {
             tokenField.setText(settings.token);
-        if (settings.joinCommand != null)
+            DiscordCommunication.setBotToken(settings.token);
+        }
+        if (settings.joinCommand != null) {
             joinCommandField.setText(settings.joinCommand);
-        if (settings.leaveCommand != null)
+            DiscordCommunication.setJoinCommand(settings.joinCommand);
+        }
+        if (settings.leaveCommand != null) {
             leaveCommandField.setText(settings.leaveCommand);
-        if (settings.scene != null)
+            DiscordCommunication.setLeaveCommand(settings.leaveCommand);
+        }
+        if (settings.scene != null) {
             sceneField.setText(settings.scene);
+            OBSCommunication.setScene(settings.scene);
+        }
         if (settings.shift != null) {
             defaultOffsetSpinner.getValueFactory().setValue(Integer.parseInt(settings.shift));
             offsetSpinner.getValueFactory().setValue(Integer.parseInt(settings.shift));
@@ -67,11 +75,13 @@ public class PanelController {
     }
 
     /**
-     * creates the talking head from the selected discord user and OBS scene item
+     * creates the talking head from the selected discord user and OBS scene item, triggers a refresh
      */
     @FXML
     private void createTalkingHead() {
-        //TODO: implement adding new OBSTHObject into Main.links
+        Main.links.add(new OBSTHObject(selectedId, elementLabel.getText(), offsetSpinner.getValue()));
+        refreshTalkingHeads();
+        refresh();
     }
 
     /**
@@ -132,7 +142,7 @@ public class PanelController {
     }
 
     /**
-     * repulls all of the currently speaking discord users and items in the OBS scene
+     * repulls all of the currently speaking discord users and items in the OBS scene, resets linking elements
      */
     @FXML
     private void refresh() {
@@ -148,6 +158,7 @@ public class PanelController {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     userLabel.setText(b.getText());
+                    selectedId = user.getId();
                 }
             });
 
@@ -162,7 +173,6 @@ public class PanelController {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     elementLabel.setText(b.getText());
-                    itemID = item.getSceneItemId();
                 }
             });
 
@@ -171,6 +181,7 @@ public class PanelController {
         // reset user and element labels
         userLabel.setText("User");
         elementLabel.setText("Element");
-        itemID = null;
+        selectedId = null;
+        offsetSpinner.getValueFactory().setValue(defaultOffsetSpinner.getValue());
     }
 }

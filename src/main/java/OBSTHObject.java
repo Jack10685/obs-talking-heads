@@ -18,18 +18,18 @@ public class OBSTHObject {
 
     /**
      * Links member to talking head in OBS
-     * @param username the username of the person in discord
+     * @param id the id of the person in discord
      * @param itemName The name of the item in the OBS scene
      * @param offset how much to move the talking head
      */
-    public OBSTHObject(String username, String itemName, int offset) {
+    public OBSTHObject(String id, String itemName, int offset) {
         talkingState = STATE_NOT_TALKING;
         OBSCommunication.getController().getSceneItemId(OBSCommunication.getScene(), itemName, 0, res -> {
             sceneItemId = res.getSceneItemId();
             OBSCommunication.getController().getSceneItemTransform(OBSCommunication.getScene(), sceneItemId, res2 -> pos = res2.getSceneItemTransform().getPositionY());
         });
         this.offset = offset;
-        user = DiscordCommunication.findUserByName(username);
+        user = DiscordCommunication.findUserById(id);
         this.itemName = itemName;
     }
 
@@ -39,8 +39,21 @@ public class OBSTHObject {
     public void refresh() {
         OBSCommunication.getController().getSceneItemId(OBSCommunication.getScene(), itemName, 0, res -> {
             sceneItemId = res.getSceneItemId();
-            OBSCommunication.getController().getSceneItemTransform(OBSCommunication.getScene(), sceneItemId, res2 -> pos = res2.getSceneItemTransform().getPositionY());
+            OBSCommunication.getController().getSceneItemTransform(OBSCommunication.getScene(), sceneItemId, res2 -> {
+                pos = res2.getSceneItemTransform().getPositionY();
+                if (talkingState == STATE_TALKING) {
+                    pos += offset;
+                }
+            });
         });
+    }
+
+    /**
+     * Used to adjust the offset for the talking heads
+     * @param offset new offset to move talking head
+     */
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     /**
@@ -84,7 +97,7 @@ public class OBSTHObject {
                 System.out.println(OBSCommunication.getScene());
                 System.out.println(sceneItemId);
 
-                OBSCommunication.getController().setSceneItemTransform(OBSCommunication.getScene(), sceneItemId, SceneItem.Transform.builder().positionY((pos - 80)).build(), 0);
+                OBSCommunication.getController().setSceneItemTransform(OBSCommunication.getScene(), sceneItemId, SceneItem.Transform.builder().positionY((pos - offset)).build(), 0);
             }
         }
     }
