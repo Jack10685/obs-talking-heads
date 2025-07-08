@@ -33,7 +33,7 @@ public class OBSCommunication {
             .host(uHost)                        // Default host
             .port(uPort)                        // Default port
             .password(password)                 // Provide your password here
-            .connectionTimeout(0)       // Seconds the client will wait for OBS to respond
+            .connectionTimeout(3)       // Seconds the client will wait for OBS to respond
             .lifecycle().onReady(new SetReady())
             .and()
             .build();

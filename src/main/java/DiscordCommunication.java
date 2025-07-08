@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -39,9 +40,13 @@ public class DiscordCommunication {
             discord.shutdownNow();
         }
         DiscordCommunication.token = token;
-        discord = JDABuilder.createDefault(token)
-                .addEventListeners(new ReadyListener())
-                .build();
+        try {
+            discord = JDABuilder.createDefault(token)
+                    .addEventListeners(new ReadyListener())
+                    .build();
+        } catch(InvalidTokenException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -50,7 +55,7 @@ public class DiscordCommunication {
      * @return whether the token matches or not
      */
     public static boolean checkToken(String token) {
-        if (DiscordCommunication.token.equals(token)) {
+        if (DiscordCommunication.token != null && DiscordCommunication.token.equals(token)) {
             return true;
         }
         return false;

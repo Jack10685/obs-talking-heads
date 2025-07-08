@@ -20,8 +20,8 @@ public class LocalStorage {
                 BufferedReader br = new BufferedReader(fr);
                 SettingsStore settings = new SettingsStore();
                 br.lines().forEach(line -> {
-                    List<String> split = Arrays.asList(line.split(" "));
-                    String key = split.removeFirst();
+                    ArrayList<String> split = new ArrayList<>(Arrays.asList(line.split(" ")));
+                    String key = split.remove(0);
                     String value = "";
                     for (String str : split) {
                         value+=(str+" ");

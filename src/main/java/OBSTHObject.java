@@ -8,23 +8,39 @@ public class OBSTHObject {
     public static final int STATE_NOT_TALKING = 0;
     public static final int STATE_TALKING = 1;
 
+    private int offset;
     private float pos;
     private int talkingState;
     public Number sceneItemId;
     private User user;
+    private String itemName;
 
 
     /**
      * Links member to talking head in OBS
      * @param username the username of the person in discord
      * @param itemName The name of the item in the OBS scene
-     * @param position The default starting position (not talking) of a talking head (this will likely go away)
+     * @param offset how much to move the talking head
      */
-    public OBSTHObject(String username, String itemName, float position) {
+    public OBSTHObject(String username, String itemName, int offset) {
         talkingState = STATE_NOT_TALKING;
-        OBSCommunication.getController().getSceneItemId(OBSCommunication.getScene(), itemName, 0, res -> sceneItemId = res.getSceneItemId());
-        pos = position;
+        OBSCommunication.getController().getSceneItemId(OBSCommunication.getScene(), itemName, 0, res -> {
+            sceneItemId = res.getSceneItemId();
+            OBSCommunication.getController().getSceneItemTransform(OBSCommunication.getScene(), sceneItemId, res2 -> pos = res2.getSceneItemTransform().getPositionY());
+        });
+        this.offset = offset;
         user = DiscordCommunication.findUserByName(username);
+        this.itemName = itemName;
+    }
+
+    /**
+     * used to get new scene item id and position of a talking head
+     */
+    public void refresh() {
+        OBSCommunication.getController().getSceneItemId(OBSCommunication.getScene(), itemName, 0, res -> {
+            sceneItemId = res.getSceneItemId();
+            OBSCommunication.getController().getSceneItemTransform(OBSCommunication.getScene(), sceneItemId, res2 -> pos = res2.getSceneItemTransform().getPositionY());
+        });
     }
 
     /**

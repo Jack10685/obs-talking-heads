@@ -7,7 +7,7 @@ public class OBSObjectTest {
                 res -> {
                     System.out.println(res.toString());
                     System.out.println(res.getSceneItemId());
-                    OBSTHObject test = new OBSTHObject("test", "Image", (float)873);
+                    OBSTHObject test = new OBSTHObject("test", "Image", 873);
                     test.sceneItemId = 1;
                     try {
                         while (true) {

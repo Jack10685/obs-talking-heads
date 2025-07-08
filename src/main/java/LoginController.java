@@ -37,9 +37,7 @@ public class LoginController {
             public void run() {
                 Main.stage.hide();
                 try {
-                    FXMLLoader loader = new FXMLLoader(LoginController.class.getResource("controlpanel.fxml"));
-                    Main.stage.setScene(loader.load());
-                    Main.controller = loader.getController();
+                    Main.stage.setScene(new Scene(FXMLLoader.load(LoginController.class.getResource("controlpanel.fxml"))));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

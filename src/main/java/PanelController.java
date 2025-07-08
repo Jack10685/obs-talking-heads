@@ -2,10 +2,7 @@ import io.obswebsocket.community.client.model.SceneItem;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.TilePane;
 import net.dv8tion.jda.api.entities.User;
@@ -31,14 +28,24 @@ public class PanelController {
     private TextField leaveCommandField;
     @FXML
     private TextField sceneField;
+    @FXML
+    private Spinner<Integer> offsetSpinner;
+    @FXML
+    private Spinner<Integer> defaultOffsetSpinner;
 
+    @FXML
+    public void initialize() {
+        Main.controller = this;
+        offsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, 80, 1));
+        defaultOffsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, 80, 1));
+        LocalStorage.loadSettings();
+    }
+    
     private Integer itemID;
     @FXML
     private void addTalkingHead() {
 
     }
-
-
 
     /**
      * called by LocalStorage.loadSettings() if a settings.ini file exists
@@ -53,7 +60,10 @@ public class PanelController {
             leaveCommandField.setText(settings.leaveCommand);
         if (settings.scene != null)
             sceneField.setText(settings.scene);
-        //TODO: add default shift setter (once that's linked and figured out)
+        if (settings.shift != null) {
+            defaultOffsetSpinner.getValueFactory().setValue(Integer.parseInt(settings.shift));
+            offsetSpinner.getValueFactory().setValue(Integer.parseInt(settings.shift));
+        }
     }
 
     /**
@@ -104,6 +114,7 @@ public class PanelController {
             DiscordCommunication.setLeaveCommand(leaveCommandField.getText());
             settings.leaveCommand = leaveCommandField.getText();
         }
+        settings.shift = defaultOffsetSpinner.getValue().toString();
         LocalStorage.saveSettings(settings);
     }
 
@@ -116,7 +127,8 @@ public class PanelController {
         DiscordCommunication.setLeaveCommand("!thleave");
         joinCommandField.setText("!thjoin");
         leaveCommandField.setText("!thleave");
-        //TODO: figure out spinner, implement resetting default
+        defaultOffsetSpinner.getValueFactory().setValue(80);
+        offsetSpinner.getValueFactory().setValue(80);
     }
 
     /**
