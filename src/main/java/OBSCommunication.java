@@ -44,11 +44,10 @@ public class OBSCommunication {
      * gets a List of all the items in a scene (Images, videos, etc)
      * @return list of all scene items, empty list if no scene set
      */
-    public static List<SceneItem> getItemsInScene() {
-        if (scene == null) {
-            return List.of();
+    public static void getItemsInScene() {
+        if (scene != null) {
+            controller.getSceneItemList(scene, res -> Main.controller.addOBSItemButtons(res.getSceneItems()));
         }
-        return controller.getSceneItemList(scene, 3).getSceneItems();
     }
 
     /**

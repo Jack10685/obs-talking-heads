@@ -1,4 +1,5 @@
 import io.obswebsocket.community.client.model.SceneItem;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -6,6 +7,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.TilePane;
 import net.dv8tion.jda.api.entities.User;
+
+import java.util.List;
 
 public class PanelController {
 
@@ -165,23 +168,33 @@ public class PanelController {
             discordUserBar.getChildren().add(b);
         }
         // get all images in OBS scene
-        for (SceneItem item : OBSCommunication.getItemsInScene()) {
-            Button b = new Button(item.getSourceName());
-            b.setPrefWidth(Button.USE_COMPUTED_SIZE);
-            b.setMaxWidth(1.7976931348623157E308);
-            b.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    elementLabel.setText(b.getText());
-                }
-            });
-
-            OBSImageBar.getChildren().add(b);
-        }
+        OBSCommunication.getItemsInScene();
         // reset user and element labels
         userLabel.setText("User");
         elementLabel.setText("Element");
         selectedId = null;
         offsetSpinner.getValueFactory().setValue(defaultOffsetSpinner.getValue());
+    }
+
+    public void addOBSItemButtons(List<SceneItem> items)  {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (SceneItem item : items) {
+                    Button b = new Button(item.getSourceName());
+                    b.setPrefWidth(Button.USE_COMPUTED_SIZE);
+                    b.setMaxWidth(1.7976931348623157E308);
+                    b.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            elementLabel.setText(b.getText());
+                        }
+                    });
+
+                    OBSImageBar.getChildren().add(b);
+                }
+            }
+        });
+
     }
 }

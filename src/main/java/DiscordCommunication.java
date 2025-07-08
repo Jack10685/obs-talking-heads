@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class DiscordCommunication {
         try {
             discord = JDABuilder.createDefault(token)
                     .addEventListeners(new ReadyListener())
+                    .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                     .build();
         } catch(InvalidTokenException e) {
             e.printStackTrace();
@@ -107,6 +109,7 @@ public class DiscordCommunication {
         public void onEvent(@NotNull GenericEvent event) {
             if (event instanceof ReadyEvent) {
                 ready = true;
+                discord.addEventListener(new DiscordEventListener());
             }
         }
 
@@ -122,8 +125,12 @@ public class DiscordCommunication {
             return new ArrayList<>();
         }
         ArrayList<User> ret = new ArrayList<>();
+        if (audio.getConnectedChannel() == null) {
+            return List.of();
+        }
         for (Member member : audio.getConnectedChannel().getMembers()) {
-            ret.add(member.getUser());
+            if (!member.getUser().isBot())
+                ret.add(member.getUser());
         }
         return ret;
     }
@@ -142,8 +149,9 @@ public class DiscordCommunication {
                 // join author's vc
                 audio = m.getGuild().getAudioManager();
                 if (m.getMember().getVoiceState() != null && m.getMember().getVoiceState().getChannel() != null) {
-                    audio.setReceivingHandler(this);
+                    //audio.setReceivingHandler(this);
                     audio.openAudioConnection(m.getMember().getVoiceState().getChannel());
+                    audio.setReceivingHandler(this);
                 } else {
                     m.getChannel().sendMessage(m.getMember().getEffectiveName()+" is not in a voice channel.");
                 }
@@ -151,10 +159,7 @@ public class DiscordCommunication {
                 if (audio != null) {
                     audio.closeAudioConnection();
                 }
-            } /*else if (m.getContentRaw().equals("!register")) { // probably not using
-                // save guild
-                server = m.getGuild();
-            }*/
+            }
         }
 
         /**
@@ -170,6 +175,11 @@ public class DiscordCommunication {
                     link.setTalkingState(OBSTHObject.STATE_NOT_TALKING);
                 }
             }
+        }
+
+        @Override
+        public boolean canReceiveCombined() {
+            return true;
         }
     }
 
