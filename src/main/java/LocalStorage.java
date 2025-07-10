@@ -26,6 +26,16 @@ import java.util.List;
 public class LocalStorage {
 
     /**
+     * deletes talking heads saved file
+     */
+    public static void deleteTalkingHeadsSave() {
+        File f = new File("heads.json");
+        if (f.exists())  {
+            f.delete();
+        }
+    }
+
+    /**
      * saves the talking heads information in a json-formatted file
      */
     public static void saveTalkingHeads() {
@@ -53,7 +63,7 @@ public class LocalStorage {
             String str = Files.readString(Path.of("heads.json"));
 
             OBSTHObject[] objs = json.fromJson(str, OBSTHObject[].class);
-            Main.links = (ArrayList<OBSTHObject>) Arrays.asList(objs);
+            Main.links = new ArrayList<>(Arrays.asList(objs));
         } catch(IOException e) {
             e.printStackTrace();
         }

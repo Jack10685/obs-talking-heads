@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -42,6 +43,7 @@ public class DiscordCommunication {
      * @param token discord bot token, you can get a token here: https://discord.com/developers/applications
      */
     public static void setBotToken(String token) {
+        ready = false;
         if (discord != null) {
             if (audio != null && audio.getConnectedChannel() != null) {
                 audio.closeAudioConnection();
@@ -57,6 +59,19 @@ public class DiscordCommunication {
                     .build();
         } catch(InvalidTokenException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * disconnects bot from any voice calls if applicable and shuts down the discord API connection
+     */
+    public static void shutdown()  {
+        if (discord != null) {
+            if (audio != null && audio.getConnectedChannel() != null) {
+                audio.closeAudioConnection();
+            }
+            discord.cancelRequests();
+            discord.shutdownNow();
         }
     }
 
@@ -95,6 +110,8 @@ public class DiscordCommunication {
      */
     public static User findUserById(String id) {
         if (ready) {
+            if (discord.getUserById(id) == null)
+                return discord.retrieveUserById(id).complete();
             return discord.getUserById(id);
         }
         return null;
@@ -110,6 +127,16 @@ public class DiscordCommunication {
             if (event instanceof ReadyEvent) {
                 ready = true;
                 discord.addEventListener(new DiscordEventListener());
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Main.controller.loadTalkingHeads();
+                        }catch(Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         }
 
