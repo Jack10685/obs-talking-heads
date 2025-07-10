@@ -51,6 +51,14 @@ public class PanelController {
     }
 
     /**
+     * saves the current talking heads configuration to JSON file
+     */
+    @FXML
+    public void saveTalkingHeads() {
+        LocalStorage.saveTalkingHeads();
+    }
+
+    /**
      * called by LocalStorage.loadSettings() if a settings.ini file exists
      * @param settings value holding class for transferring everything in one variable
      */

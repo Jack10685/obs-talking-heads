@@ -1,3 +1,4 @@
+//import com.fasterxml.jackson.annotation.JsonValue;
 import io.obswebsocket.community.client.model.SceneItem;
 import net.dv8tion.jda.api.entities.User;
 
@@ -33,6 +34,8 @@ public class OBSTHObject {
         this.itemName = itemName;
     }
 
+
+
     /**
      * used to get new scene item id and position of a talking head
      */
@@ -49,11 +52,27 @@ public class OBSTHObject {
     }
 
     /**
-     * Used to adjust the offset for the talking heads
+     * returns the Item name in the OBS scene
+     * @return item name
+     */
+    public String getOBSItemName() {
+        return itemName;
+    }
+
+    /**
+     * Used to adjust the offset for the talking head
      * @param offset new offset to move talking head
      */
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    /**
+     * returns the offset for the talking head
+     * @return the offset
+     */
+    public int getOffset() {
+        return offset;
     }
 
     /**
