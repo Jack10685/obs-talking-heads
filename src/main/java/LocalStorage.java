@@ -113,6 +113,8 @@ public class LocalStorage {
                     }
                 });
                 Main.controller.setSettings(settings);
+            } else {
+                Main.controller.refreshSidePanels();
             }
         } catch(Exception e) {
             e.printStackTrace();

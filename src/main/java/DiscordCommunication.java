@@ -37,6 +37,7 @@ public class DiscordCommunication {
     private static String leaveCommand = "!thjoin";
     private static String joinCommand = "!thleave";
     private static String token;
+    private static boolean tokenValid = false;
 
     /**
      * sets the token for the discord bot
@@ -58,7 +59,10 @@ public class DiscordCommunication {
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                     .build();
         } catch(InvalidTokenException e) {
-            e.printStackTrace();
+            tokenValid = false;
+        } finally {
+            Main.controller.refreshTalkingHeads();
+            Main.controller.refreshSidePanels();
         }
     }
 
@@ -76,6 +80,22 @@ public class DiscordCommunication {
     }
 
     /**
+     * Checks whether the token is valid or not
+     * @return if the token is valid
+     */
+    public static boolean checkToken() {
+        return tokenValid;
+    }
+
+    /**
+     * returns whether the token has been set or not
+     * @return whether the token has been set or not
+     */
+    public static boolean isTokenNull() {
+        return (token == null);
+    }
+
+    /**
      * returns whether or not the passed in token argument matches the current token
      * @param token token to check for matching
      * @return whether the token matches or not
@@ -85,6 +105,14 @@ public class DiscordCommunication {
             return true;
         }
         return false;
+    }
+
+    /**
+     * returns the currently set join command for the bot to join a discord voice chat
+     * @return the join command
+     */
+    public static String getJoinCommand() {
+        return joinCommand;
     }
 
     /**
@@ -132,6 +160,7 @@ public class DiscordCommunication {
                     public void run() {
                         try {
                             Main.controller.loadTalkingHeads();
+                            Main.controller.refreshSidePanels();
                         }catch(Exception e) {
                             e.printStackTrace();
                         }
@@ -144,12 +173,23 @@ public class DiscordCommunication {
     }
 
     /**
+     * returns whether or not the bot is present in a voice channel
+     * @return if the bot is in a voice channel
+     */
+    public static boolean getIsInVoiceChat() {
+        if (audio == null || audio.getConnectedChannel() == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * gets all the users in the current voice channel, returns an empty list if not connected
      * @return List of users
      */
     public static List<User> getTalkingUsers() {
         if (audio == null) {
-            return new ArrayList<>();
+            return List.of();
         }
         ArrayList<User> ret = new ArrayList<>();
         if (audio.getConnectedChannel() == null) {

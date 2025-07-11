@@ -134,7 +134,7 @@ public class PanelController {
      * in the event that scene ids change (reordering, deleting and readding, OBS being weird), this will realign the user to the correct talking head
      */
     @FXML
-    private void refreshTalkingHeads() {
+    public void refreshTalkingHeads() {
         talkingHeadPane.getChildren().removeAll(talkingHeadPane.getChildren());
 
         VBox general = new VBox();
@@ -161,18 +161,37 @@ public class PanelController {
         save.setMaxWidth(Double.MAX_VALUE);
         save.setMaxHeight(Double.MAX_VALUE);
 
-        Button addManually = new Button("Add Manually");
+        //TODO: add "add manually" functionality, possibly v2
+        /*Button addManually = new Button("Add Manually");
         addManually.setMaxWidth(Double.MAX_VALUE);
-        addManually.setMaxHeight(Double.MAX_VALUE);
+        addManually.setMaxHeight(Double.MAX_VALUE);*/
+
+        Button pause = new Button("Pause All");
+        pause.setMaxWidth(Double.MAX_VALUE);
+        pause.setMaxHeight(Double.MAX_VALUE);
+        pause.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (pause.getText().equals("Pause All")) {
+                    pause.setText("Play All");
+                    Main.links.forEach(OBSTHObject::pause);
+                } else {
+                    pause.setText("Pause All");
+                    Main.links.forEach(OBSTHObject::play);
+                }
+            }
+        });
+
 
         general.getChildren().add(refresh);
         general.getChildren().add(save);
-        general.getChildren().add(addManually);
+        //general.getChildren().add(addManually);
+        general.getChildren().add(pause);
 
         talkingHeadPane.getChildren().add(general);
 
 
-        //TODO: change this to open a second window to make more edits
+        //TODO: change this to open a second window to make more edits, likely v2
         for (OBSTHObject heads : Main.links) {
             VBox headContainer = new VBox();
             headContainer.setAlignment(Pos.CENTER);
@@ -270,7 +289,7 @@ public class PanelController {
      * repulls all of the currently speaking discord users and items in the OBS scene, resets linking elements
      */
     @FXML
-    private void refreshSidePanels() {
+    public void refreshSidePanels() {
         // remove all elements in left and right panes
         OBSImageBar.getChildren().removeAll(OBSImageBar.getChildren());
         discordUserBar.getChildren().removeAll(discordUserBar.getChildren());
@@ -288,6 +307,18 @@ public class PanelController {
             });
 
             discordUserBar.getChildren().add(b);
+        }
+        if (discordUserBar.getChildren().isEmpty() && !DiscordCommunication.getIsInVoiceChat()) {
+            if (DiscordCommunication.isTokenNull()) {
+                Label nullLabel = new Label("No token set,\r\nplease navigate to settings tab\r\nand provide a discord bot token");
+                discordUserBar.getChildren().add(nullLabel);
+            } else if (!DiscordCommunication.checkToken()) {
+                Label badLabel = new Label("Specified bot token is invalid,\r\nor connection was otherwise\r\nrefused.\r\nPlease try a new token or reach\r\nout to support");
+                discordUserBar.getChildren().add(badLabel);
+            } else {
+                Label joinLabel = new Label("Bot is not in a voice chat.\r\nJoin a voice chat and type\r\n\""+DiscordCommunication.getJoinCommand()+"\"\r\nfor the bot to join your channel,\r\nthen click refresh.");
+                discordUserBar.getChildren().add(joinLabel);
+            }
         }
         // get all images in OBS scene
         OBSCommunication.getItemsInScene();

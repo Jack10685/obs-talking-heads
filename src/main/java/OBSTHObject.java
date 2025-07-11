@@ -15,7 +15,9 @@ public class OBSTHObject {
     public Number sceneItemId;
     private User user;
     private String itemName;
+    private boolean paused;
 
+    //TODO: add custom images for talking/not talking, maybe v2 or v3
 
     /**
      * Links member to talking head in OBS
@@ -32,9 +34,23 @@ public class OBSTHObject {
         this.offset = offset;
         user = DiscordCommunication.findUserById(id);
         this.itemName = itemName;
+        paused = false;
     }
 
+    /**
+     * pause object from moving it's associated talking head in OBS
+     */
+    public void pause() {
+        paused = true;
+        setTalkingState(STATE_NOT_TALKING);
+    }
 
+    /**
+     * resumes talking head movement in OBS
+     */
+    public void play() {
+        paused = false;
+    }
 
     /**
      * used to get new scene item id and position of a talking head
@@ -96,7 +112,11 @@ public class OBSTHObject {
      * @param state the talking state to change to, options are either STATE_TALKING or STATE_NOT_TALKING
      */
     public void setTalkingState(int state) {
-        if (talkingState != state) {
+        if (paused && talkingState == STATE_TALKING) {
+            talkingState = STATE_NOT_TALKING;
+            updateState();
+        }
+        if (talkingState != state && !paused) {
             talkingState = state;
             updateState();
         }
