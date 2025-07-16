@@ -7,10 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.stage.WindowEvent;
 import net.dv8tion.jda.api.entities.User;
@@ -44,6 +41,8 @@ public class PanelController {
     private Spinner<Integer> defaultOffsetSpinner;
     @FXML
     private TilePane talkingHeadPane;
+    @FXML
+    private ScrollPane existingBar;
 
     private String selectedId;
 
@@ -65,6 +64,7 @@ public class PanelController {
         offsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, 80, 1));
         defaultOffsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, 80, 1));
         LocalStorage.loadSettings();
+        talkingHeadPane.setPrefHeight(existingBar.getHeight());
     }
 
     /**
@@ -135,6 +135,8 @@ public class PanelController {
      */
     @FXML
     public void refreshTalkingHeads() {
+        talkingHeadPane.setAlignment(Pos.CENTER_LEFT);
+        talkingHeadPane.setTileAlignment(Pos.CENTER);
         talkingHeadPane.getChildren().removeAll(talkingHeadPane.getChildren());
 
         VBox general = new VBox();
@@ -228,6 +230,7 @@ public class PanelController {
                 @Override
                 public void handle(ActionEvent event) {
                     Main.links.remove(heads);
+                    refreshTalkingHeads();
                 }
             });
 
@@ -241,6 +244,19 @@ public class PanelController {
 
             talkingHeadPane.getChildren().add(headContainer);
 
+        }
+
+        if (Main.links.isEmpty()) {
+            VBox headContainer = new VBox();
+            headContainer.setAlignment(Pos.CENTER);
+            headContainer.setPrefHeight(talkingHeadPane.getHeight());
+            headContainer.setBackground(Background.fill(Paint.valueOf("lightgrey")));
+
+            headContainer.getChildren().add(new Label("Talking heads will show up down here"));
+
+            talkingHeadPane.getChildren().add(headContainer);
+            talkingHeadPane.setPrefHeight(existingBar.getHeight());
+            talkingHeadPane.setPrefWidth(existingBar.getWidth()-2); // if I don't subtract 2 or more, bar shows up at the bottom
         }
     }
 
@@ -269,6 +285,7 @@ public class PanelController {
             settings.leaveCommand = leaveCommandField.getText();
         }
         settings.shift = defaultOffsetSpinner.getValue().toString();
+        offsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(Integer.MIN_VALUE, Integer.MAX_VALUE, defaultOffsetSpinner.getValue(), 1));
         LocalStorage.saveSettings(settings);
     }
 

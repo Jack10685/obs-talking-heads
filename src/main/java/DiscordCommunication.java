@@ -58,6 +58,7 @@ public class DiscordCommunication {
                     .addEventListeners(new ReadyListener())
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                     .build();
+            tokenValid = true;
         } catch(InvalidTokenException e) {
             tokenValid = false;
         } finally {
